@@ -26,6 +26,9 @@
 
         <label for="">Image Width:</label>
         <input type="text" name="image_width" value="3024">
+
+        <label for="">Blur Background:</label>
+        <input type="checkbox" name="bg_blur">        
         <br><br>
 
         

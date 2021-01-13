@@ -6,6 +6,7 @@
     $dst_dir   = $_POST['dst_dir'];
     $height    = (int)$_POST['image_height'];
     $width     = (int)$_POST['image_width'];
+    $bg_blur = isset($_POST['bg_blur']) && $_POST['bg_blur'] != '' ? $_POST['bg_blur'] : '';
 
     $logo_url  = isset($_POST['logo']) && $_POST['logo'] != '' ? $_POST['logo'] : '';
     $logo_x = isset($_POST['logo_x']) && $_POST['logo_x'] != '' ? $_POST['logo_x'] : '';
@@ -16,7 +17,6 @@
     $code      = '';
     $codeInt   = '';
 
-    // $logo_url  = isset($_POST['logo']) && $_POST['logo'] != '' ? $_POST['logo'] : '';
     // $text      = isset($_POST['text']) && count($_POST['text']) > 0 ? $_POST['text'] : '';
     // $code      = isset($_POST['code']) && $_POST['code']['text'] != '' > 0 ? $_POST['code'] : '';
     // $codeInt   = $code != '' ? (int)$code['text'] : 1;
@@ -50,85 +50,125 @@
                  default     : return false;
         }
 
-        $img_blur = imagecreatetruecolor($width, $height);
         
-        $src_w    = imagesx($src_img);
-        $src_h    = imagesy($src_img);
-        $maxfact = max($width/$src_w, $height/$src_h);
-        $new_w   = $src_w * $maxfact;
-        $new_h   = $src_h * $maxfact;
+        $src_w = imagesx($src_img);
+        $src_h = imagesy($src_img);
+        
+        
+        
+        $maxfact    = max($width/$src_w, $height/$src_h);
+        $imgBlur_w = $src_w * $maxfact;
+        $imgBlur_h = $src_h * $maxfact;
+        $imgBlur   = imagecreatetruecolor($width, $height);
+        
 
-        imagecopyresampled($img_blur, $src_img, -(($new_w - $width)/2), -(($new_h - $height)/2), 0, 0, $new_w, $new_h, $src_w, $src_h);
+        
+        
+        
+        if($bg_blur == 'on'){
+            
+            // blur back image            
+            imagecopyresampled($imgBlur, $src_img, -(($imgBlur_w - $width)/2), -(($imgBlur_h - $height)/2), 0, 0, $imgBlur_w, $imgBlur_h, $src_w, $src_h);
+            for ($x=1; $x<=80; $x++){ imagefilter($imgBlur, IMG_FILTER_GAUSSIAN_BLUR,100); }        
+            imagefilter($imgBlur, IMG_FILTER_SMOOTH,100);
+            imagefilter($imgBlur, IMG_FILTER_BRIGHTNESS,10);
 
-        // blur back image
-        for ($x=1; $x<=40; $x++){
-            imagefilter($img_blur, IMG_FILTER_GAUSSIAN_BLUR,300);
+        } else {
+            
+            // fill solid color in back image            
+            $bg_color  = imagecolorallocate($imgBlur, 242, 242, 242); //255,255,255
+            imagefilledrectangle($imgBlur,0,0,$width-1,$height-1,$bg_color);
+
         }
-        
-        // imagefilter($img_blur, IMG_FILTER_GAUSSIAN_BLUR,300);
-        imagefilter($img_blur, IMG_FILTER_SMOOTH,100);
-        imagefilter($img_blur, IMG_FILTER_BRIGHTNESS,10);
 
-        $minfact  = min($width/$src_w, $height/$src_h);
-        $new_w    = $src_w*$minfact;
-        $new_h    = $src_h*$minfact;
-        $img_main = imagecreatetruecolor($new_w, $new_h);
-        imagecopyresampled($img_main, $src_img, 0, 0, 0, 0, $new_w, $new_h, $src_w, $src_h);
         
+        
+        
+        $minfact    = min($width/$src_w, $height/$src_h);
+        $imgMain_w = $src_w*$minfact;
+        $imgMain_h = $src_h*$minfact;
+        $imgMain   = imagecreatetruecolor($imgMain_w, $imgMain_h);
+        imagecopyresampled($imgMain, $src_img, 0, 0, 0, 0, $imgMain_w, $imgMain_h, $src_w, $src_h);
+        
+
+
+        
+
         // merge front & back image
-        // imagecopymerge($img_blur, $img_main,-(($new_w - $width)/2), -(($new_h - $height)/2), 0, 0, $new_w, $new_h, 100);
-        imagecopy($img_blur, $img_main,-(($new_w - $width)/2), -(($new_h - $height)/2), 0, 0, $new_w, $new_h);
+        imagecopymerge($imgBlur, $imgMain,-(($imgMain_w - $width)/2), -(($imgMain_h - $height)/2), 0, 0, $imgMain_w, $imgMain_h, 100);
+
+
+
 
         
-        // add logo to front image
+        // add logo 
         if($logo_url != ''){
             $logo   = imagecreatefrompng($logo_url);
             $logo_w = imagesx($logo);
             $logo_h = imagesy($logo);
 
             if($logo_center == 'on'){                
-                $logo_x = ($new_w / 2) - ($logo_w / 2); 
-                $logo_y = ($new_h / 2) - ($logo_h / 2); 
-                // imagecopy($img_main, $logo, $logo_x, $logo_y, 0, 0, $logo_w, $logo_h);
+                $logo_x = ($width / 2) - ($logo_w / 2); 
+                $logo_y = ($height / 2) - ($logo_h / 2); 
             }          
-            imagecopy($img_blur, $logo, $logo_x, $logo_y, 0, 0, $logo_w, $logo_h);
-            
+            imagecopy($imgBlur, $logo, $logo_x, $logo_y, 0, 0, $logo_w, $logo_h);
         }
         
-        if($code != ''){
-            $black_h   = 50;
-            $img_black = imagecreate($width, $black_h);
-            imagefilter($img_black, IMG_FILTER_GAUSSIAN_BLUR);
-            imagecopy($img_main, $img_black, 0, $height - $black_h, 0, 0, $width, $black_h);
-        }
+
+
+
+
+
+
+        // if($code != ''){
+        //     $black_h   = 50;
+        //     $img_black = imagecreate($width, $black_h);
+        //     imagefilter($img_black, IMG_FILTER_GAUSSIAN_BLUR);
+        //     imagecopy($imgMain, $img_black, 0, $height - $black_h, 0, 0, $width, $black_h);
+        // }
         
+
+
+
+
+
         // add text            
         if($text != []){
             foreach ($text as $k => $v) {                
                 $color_code = [255, 255, 255];
-                addText($img_blur, $font,(int) $v['font_size'], (int) $v['x'], (int) $v['y'], $v['text'], $color_code);
+                addText($imgBlur, $font,(int) $v['font_size'], (int) $v['x'], (int) $v['y'], $v['text'], $color_code);
             }            
         }
         
+
+
+
+
         // add code
         if($code != ''){
             $codeText      = "Code: " . $codeInt;
             $codeTextWidth = imagettfbbox($code['font_size'], 0, $font, $codeText)[2];
             $color_code = [255, 255, 255];
-            addText($img_blur, $font, (int) $code['font_size'], $width - $codeTextWidth - (int) $code['x'], (int) $code['y'], $codeText, $color_code);
+            addText($imgBlur, $font, (int) $code['font_size'], $width - $codeTextWidth - (int) $code['x'], (int) $code['y'], $codeText, $color_code);
         }
         
+        
+        
+
+
         // output new file
         if($code != ''){ 
-            imagejpeg($img_blur, $dst_dir."\\".$codeInt.".".$ext, 100);
+            imagejpeg($imgBlur, $dst_dir."\\".$codeInt.".".$ext, 100);
             $codeInt++; 
         } else {
-            imagejpeg($img_blur, $dst_dir."\\".$image, 100);
+            imagejpeg($imgBlur, $dst_dir."\\".$image, 100);
         }   
         
         
-        imagedestroy($img_blur);
-        imagedestroy($img_main);
+
+
+        imagedestroy($imgBlur);
+        imagedestroy($imgMain);
 
         if($code != ''){
             imagedestroy($img_black);

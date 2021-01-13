@@ -24,10 +24,10 @@
         <br><br>
 
         <label for="">Image Height:</label>
-        <input type="text" name="image_height" value="3024">
+        <input type="text" name="image_height" value="600">
 
         <label for="">Image Width:</label>
-        <input type="text" name="image_width" value="3024">
+        <input type="text" name="image_width" value="600">
 
         <label for="">Blur Background:</label>
         <input type="checkbox" name="bg_blur">        
@@ -53,35 +53,37 @@
 
         <h1>Text:</h1>
         <label for="">Add Text:</label>
-        <input type="checkbox" name="isAddText">   
+        <input type="checkbox" name="isAddText"> <br>
 
 
         <label for="">Text1:</label>
-        <input type="text" name="text[0][text]" placeholder="fb.com/munirasfantasy">
+        <input type="text" name="text[0][text]" value="facebook.com/muniba.mom ~ facebook.com/muniba.mom ~ facebook.com/muniba.mom ~ facebook.com/muniba.mom ~ facebook.com/muniba.mom">
         
         <label for="">Font:</label>
-        <input type="text" name="text[0][font_size]" placeholder="16">
+        <input type="text" name="text[0][font_size]" value="8">
         
         <label for="">X-Pos:</label>
-        <input type="text" name="text[0][x]" placeholder="20">
+        <input type="text" name="text[0][x]" value="0">
         
         <label for="">Y-Pos:</label>
-        <input type="text" name="text[0][y]" placeholder="580">
+        <input type="text" name="text[0][y]" value="200">
+        <br><br>
+
+        <label for="">Text2:</label>
+        <input type="text" name="text[1][text]" value="facebook.com/muniba.mom ~ facebook.com/muniba.mom ~ facebook.com/muniba.mom ~ facebook.com/muniba.mom ~ facebook.com/muniba.mom">
+        
+        <label for="">Font:</label>
+        <input type="text" name="text[1][font_size]" value="8">
+        
+        <label for="">X-Pos:</label>
+        <input type="text" name="text[1][x]" value="0">
+        
+        <label for="">Y-Pos:</label>
+        <input type="text" name="text[1][y]" value="400">
         <br><br>
 
 
-        <!-- <label for="">Text2:</label>
-        <input type="text" name="text[1][text]" value="Code: 1001">
 
-        <label for="">Font:</label>
-        <input type="text" name="text[1][font_size]" value="0">
-        
-        <label for="">X-Pos:</label>
-        <input type="text" name="text[1][x]" value="400">
-        
-        <label for="">Y-Pos:</label>
-        <input type="text" name="text[1][y]" value="580">
-        <br><br> -->
 
 
         <h1>Code:</h1>
@@ -89,16 +91,16 @@
         <input type="checkbox" name="isAddCode"> 
 
         <label for="">Code:</label>
-        <input type="text" name="code[number_start]" placeholder="1001">
+        <input type="text" name="code[number_start]" value="1001">
 
         <label for="">Font:</label>
-        <input type="text" name="code[font_size]" placeholder="16">
+        <input type="text" name="code[font_size]" value="16">
         
         <label for="">X-Pos:</label>
-        <input type="text" name="code[x]" placeholder="20">
+        <input type="text" name="code[x]" value="20">
         
         <label for="">Y-Pos:</label>
-        <input type="text" name="code[y]" placeholder="580">
+        <input type="text" name="code[y]" value="580">
         <br><br>
 
 

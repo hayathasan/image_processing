@@ -12,7 +12,7 @@
     $logo_y = isset($_POST['logo_y']) && $_POST['logo_y'] != '' ? $_POST['logo_y'] : '';
     $logo_center = isset($_POST['logo_center']) && $_POST['logo_center'] != '' ? $_POST['logo_center'] : '';
 
-    $text      = '';
+    $text      = [];
     $code      = '';
     $codeInt   = '';
 
@@ -103,9 +103,10 @@
         }
         
         // add text            
-        if($text != ''){
-            foreach ($text as $k => $v) {
-                addText($img_blur, $font,(int) $v['font_size'], (int) $v['x'], (int) $v['y'], $v['text']);
+        if($text != []){
+            foreach ($text as $k => $v) {                
+                $color_code = [255, 255, 255];
+                addText($img_blur, $font,(int) $v['font_size'], (int) $v['x'], (int) $v['y'], $v['text'], $color_code);
             }            
         }
         
@@ -113,7 +114,8 @@
         if($code != ''){
             $codeText      = "Code: " . $codeInt;
             $codeTextWidth = imagettfbbox($code['font_size'], 0, $font, $codeText)[2];
-            addText($img_blur, $font, (int) $code['font_size'], $width - $codeTextWidth - (int) $code['x'], (int) $code['y'], $codeText);
+            $color_code = [255, 255, 255];
+            addText($img_blur, $font, (int) $code['font_size'], $width - $codeTextWidth - (int) $code['x'], (int) $code['y'], $codeText, $color_code);
         }
         
         // output new file
@@ -138,19 +140,8 @@
     echo "Image Processed Successfully";
 
 
-    function addText($image, $font, $font_size=0, $text_x=0, $text_y=0, $text=" "){
-        // $font = "C:\\Windows\\Fonts\\segoeui.ttf";
-        // $font_size = 12;
-        // $text      = "Code: 1001";
-        // $bbox      = imagettfbbox($font_size, 0, $font, $text);
-        // $text_x    = 10;                                                   //left       
-        // $text_x    = (imagesx($image) - 10) - (($bbox[2] - $bbox[0]));     //right      
-        // $text_x    = (imagesx($image) / 2) - (($bbox[2] - $bbox[0]) / 2);  //center                                
-        // $text_y    = 10;                                                   //top
-        // $text_y    = imagesy($image) - 10;                                 //bottom
-        // $color     = imagecolorallocate($img_main, 255, 255, 255);
-        
-        $color = imagecolorallocate($image, 255, 255, 255);
+    function addText($image, $font, $font_size=0, $text_x=0, $text_y=0, $text=" ", $cc){
+        $color = imagecolorallocate($image, $cc[0], $cc[1], $cc[2]); 
         return imagettftext($image, $font_size, 0, $text_x, $text_y, $color, $font, $text);
     }
     

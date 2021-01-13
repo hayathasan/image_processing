@@ -13,6 +13,8 @@
 
     <form action="image.php" method="POST">
     
+        <h1>Source & Destination:</h1>
+        
         <label for="">Source Folder:</label>
         <input type="text" name="src_dir" value="" style="width: 100%;">
         <br><br>
@@ -31,6 +33,7 @@
         <input type="checkbox" name="bg_blur">        
         <br><br>
 
+        <h1>Logo:</h1>
         
         <label for="">Logo:</label>
         <input type="text" name="logo" value="" style="width: 100%;">
@@ -47,6 +50,10 @@
 
         <br><br>
 
+
+        <h1>Text:</h1>
+        <label for="">Add Text:</label>
+        <input type="checkbox" name="isAddText">   
 
 
         <label for="">Text1:</label>
@@ -77,8 +84,12 @@
         <br><br> -->
 
 
+        <h1>Code:</h1>
+        <label for="">Add Code:</label>
+        <input type="checkbox" name="isAddCode"> 
+
         <label for="">Code:</label>
-        <input type="text" name="code[text]" placeholder="1001">
+        <input type="text" name="code[number_start]" placeholder="1001">
 
         <label for="">Font:</label>
         <input type="text" name="code[font_size]" placeholder="16">

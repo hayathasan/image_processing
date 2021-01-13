@@ -13,13 +13,12 @@
     $logo_y = isset($_POST['logo_y']) && $_POST['logo_y'] != '' ? $_POST['logo_y'] : '';
     $logo_center = isset($_POST['logo_center']) && $_POST['logo_center'] != '' ? $_POST['logo_center'] : '';
 
-    $text      = [];
-    $code      = '';
-    $codeInt   = '';
+    $isAddText = isset($_POST['isAddText']) && $_POST['isAddText'] != '' ? $_POST['isAddText'] : '';
+    $text      = $_POST['text'];
 
-    // $text      = isset($_POST['text']) && count($_POST['text']) > 0 ? $_POST['text'] : '';
-    // $code      = isset($_POST['code']) && $_POST['code']['text'] != '' > 0 ? $_POST['code'] : '';
-    // $codeInt   = $code != '' ? (int)$code['text'] : 1;
+    $isAddCode = isset($_POST['isAddCode']) && $_POST['isAddCode'] != '' ? $_POST['isAddCode'] : '';
+    $code      = $_POST['code'];
+    $codeInt   = (int)$code['number_start'];
 
     $font = "C:\\Windows\\Fonts\\segoeui.ttf";
     $src_files = array_values(preg_grep('~\.(jpeg|jpg|png)$~', scandir($src_dir)));
@@ -120,20 +119,8 @@
 
 
 
-        // if($code != ''){
-        //     $black_h   = 50;
-        //     $img_black = imagecreate($width, $black_h);
-        //     imagefilter($img_black, IMG_FILTER_GAUSSIAN_BLUR);
-        //     imagecopy($imgMain, $img_black, 0, $height - $black_h, 0, 0, $width, $black_h);
-        // }
-        
-
-
-
-
-
         // add text            
-        if($text != []){
+        if($isAddText == 'on'){
             foreach ($text as $k => $v) {                
                 $color_code = [255, 255, 255];
                 addText($imgBlur, $font,(int) $v['font_size'], (int) $v['x'], (int) $v['y'], $v['text'], $color_code);
@@ -145,10 +132,16 @@
 
 
         // add code
-        if($code != ''){
-            $codeText      = "Code: " . $codeInt;
+        if($isAddCode == 'on'){
+            // $black_h  = 50;
+            // $imgBlack = imagecreatetruecolor($width, $black_h);
+            // $bg_color = imagecolorallocate($imgBlack, 242, 242, 242);  //255,255,255
+            // imagefilledrectangle($imgBlack, 0, 0, $width-1, $black_h-1, $bg_color);
+            // imagecopy($imgBlur, $imgBlack, 0, $height - $black_h, 0, 0, $width, $black_h);
+
+            $codeText      = "Code: $codeInt";
             $codeTextWidth = imagettfbbox($code['font_size'], 0, $font, $codeText)[2];
-            $color_code = [255, 255, 255];
+            $color_code    = [0, 0, 0];
             addText($imgBlur, $font, (int) $code['font_size'], $width - $codeTextWidth - (int) $code['x'], (int) $code['y'], $codeText, $color_code);
         }
         
@@ -157,7 +150,7 @@
 
 
         // output new file
-        if($code != ''){ 
+        if($isAddCode == 'on'){
             imagejpeg($imgBlur, $dst_dir."\\".$codeInt.".".$ext, 100);
             $codeInt++; 
         } else {
@@ -170,8 +163,8 @@
         imagedestroy($imgBlur);
         imagedestroy($imgMain);
 
-        if($code != ''){
-            imagedestroy($img_black);
+        if($isAddCode == 'on'){
+            // imagedestroy($imgBlack);
         }    
     }
 

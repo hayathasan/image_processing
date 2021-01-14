@@ -81,6 +81,19 @@
         <label for="">Y-Pos:</label>
         <input type="text" name="text[1][y]" value="400">
         <br><br>
+        
+        <label for="">Text3:</label>
+        <input type="text" name="text[2][text]" value="Image Source: Internet :)">
+        
+        <label for="">Font:</label>
+        <input type="text" name="text[2][font_size]" value="8">
+        
+        <label for="">X-Pos:</label>
+        <input type="text" name="text[2][x]" value="20">
+        
+        <label for="">Y-Pos:</label>
+        <input type="text" name="text[2][y]" value="580">
+        <br><br>
 
 
 

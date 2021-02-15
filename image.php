@@ -49,7 +49,9 @@
                  default     : return false;
         }
 
-        
+        $degrees = 270;
+        $src_img = imagerotate($src_img, $degrees, 0);
+
         $src_w = imagesx($src_img);
         $src_h = imagesy($src_img);
         
@@ -150,11 +152,12 @@
 
 
         // output new file
+        $quality = 50;
         if($isAddCode == 'on'){
-            imagejpeg($imgBlur, $dst_dir."\\".$codeInt.".".$ext, 100);
+            imagejpeg($imgBlur, $dst_dir."\\".$codeInt.".".$ext, $quality);
             $codeInt++; 
         } else {
-            imagejpeg($imgBlur, $dst_dir."\\".$image, 100);
+            imagejpeg($imgBlur, $dst_dir."\\".$image, $quality);
         }   
         
         

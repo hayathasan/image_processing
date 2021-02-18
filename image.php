@@ -49,54 +49,55 @@
                  default     : return false;
         }
 
-        $degrees = 270;
-        $src_img = imagerotate($src_img, $degrees, 0);
+        // $degrees = 270;
+        // $src_img = imagerotate($src_img, $degrees, 0);
 
         $src_w = imagesx($src_img);
         $src_h = imagesy($src_img);
         
         
         
+        // create dst size blank image
         $maxfact    = max($width/$src_w, $height/$src_h);
-        $imgBlur_w = $src_w * $maxfact;
-        $imgBlur_h = $src_h * $maxfact;
-        $imgBlur   = imagecreatetruecolor($width, $height);
+        $dst_img_w = $src_w * $maxfact;
+        $dst_img_h = $src_h * $maxfact;
+        $dst_img   = imagecreatetruecolor($width, $height);
         
 
         
         
         
-        if($bg_blur == 'on'){
+        if($bg_blur == 'on' && ($src_w/$src_h != 1)){
             
             // blur back image            
-            imagecopyresampled($imgBlur, $src_img, -(($imgBlur_w - $width)/2), -(($imgBlur_h - $height)/2), 0, 0, $imgBlur_w, $imgBlur_h, $src_w, $src_h);
-            for ($x=1; $x<=80; $x++){ imagefilter($imgBlur, IMG_FILTER_GAUSSIAN_BLUR,100); }        
-            imagefilter($imgBlur, IMG_FILTER_SMOOTH,100);
-            imagefilter($imgBlur, IMG_FILTER_BRIGHTNESS,10);
+            imagecopyresampled($dst_img, $src_img, -(($dst_img_w - $width)/2), -(($dst_img_h - $height)/2), 0, 0, $dst_img_w, $dst_img_h, $src_w, $src_h);
+            for ($x=1; $x<=80; $x++){ imagefilter($dst_img, IMG_FILTER_GAUSSIAN_BLUR,100); }        
+            imagefilter($dst_img, IMG_FILTER_SMOOTH,100);
+            imagefilter($dst_img, IMG_FILTER_BRIGHTNESS,10);
 
         } else {
             
-            // fill solid color in back image            
-            $bg_color  = imagecolorallocate($imgBlur, 242, 242, 242); //255,255,255
-            imagefilledrectangle($imgBlur,0,0,$width-1,$height-1,$bg_color);
+            // fill solid color in back image instead of blur            
+            // $bg_color  = imagecolorallocate($dst_img, 242, 242, 242); //255,255,255
+            // imagefilledrectangle($dst_img,0,0,$width-1,$height-1,$bg_color);
 
         }
 
         
         
-        
+        // resize src_img with dest_img size
         $minfact    = min($width/$src_w, $height/$src_h);
-        $imgMain_w = $src_w*$minfact;
-        $imgMain_h = $src_h*$minfact;
-        $imgMain   = imagecreatetruecolor($imgMain_w, $imgMain_h);
-        imagecopyresampled($imgMain, $src_img, 0, 0, 0, 0, $imgMain_w, $imgMain_h, $src_w, $src_h);
+        $src_img_new_w = $src_w*$minfact;
+        $src_img_new_h = $src_h*$minfact;
+        $src_img_new   = imagecreatetruecolor($src_img_new_w, $src_img_new_h);
+        imagecopyresampled($src_img_new, $src_img, 0, 0, 0, 0, $src_img_new_w, $src_img_new_h, $src_w, $src_h);
         
 
 
         
 
         // merge front & back image
-        imagecopymerge($imgBlur, $imgMain,-(($imgMain_w - $width)/2), -(($imgMain_h - $height)/2), 0, 0, $imgMain_w, $imgMain_h, 100);
+        imagecopymerge($dst_img, $src_img_new,-(($src_img_new_w - $width)/2), -(($src_img_new_h - $height)/2), 0, 0, $src_img_new_w, $src_img_new_h, 100);
 
 
 
@@ -112,7 +113,7 @@
                 $logo_x = ($width / 2) - ($logo_w / 2); 
                 $logo_y = ($height / 2) - ($logo_h / 2); 
             }          
-            imagecopy($imgBlur, $logo, $logo_x, $logo_y, 0, 0, $logo_w, $logo_h);
+            imagecopy($dst_img, $logo, $logo_x, $logo_y, 0, 0, $logo_w, $logo_h);
         }
         
 
@@ -125,7 +126,7 @@
         if($isAddText == 'on'){
             foreach ($text as $k => $v) {                
                 $color_code = [255, 255, 255];
-                addText($imgBlur, $font,(int) $v['font_size'], (int) $v['x'], (int) $v['y'], $v['text'], $color_code);
+                addText($dst_img, $font,(int) $v['font_size'], (int) $v['x'], (int) $v['y'], $v['text'], $color_code);
             }            
         }
         
@@ -139,12 +140,12 @@
             // $imgBlack = imagecreatetruecolor($width, $black_h);
             // $bg_color = imagecolorallocate($imgBlack, 242, 242, 242);  //255,255,255
             // imagefilledrectangle($imgBlack, 0, 0, $width-1, $black_h-1, $bg_color);
-            // imagecopy($imgBlur, $imgBlack, 0, $height - $black_h, 0, 0, $width, $black_h);
+            // imagecopy($dst_img, $imgBlack, 0, $height - $black_h, 0, 0, $width, $black_h);
 
             $codeText      = "Code: $codeInt";
             $codeTextWidth = imagettfbbox($code['font_size'], 0, $font, $codeText)[2];
             $color_code    = [0, 0, 0];
-            addText($imgBlur, $font, (int) $code['font_size'], $width - $codeTextWidth - (int) $code['x'], (int) $code['y'], $codeText, $color_code);
+            addText($dst_img, $font, (int) $code['font_size'], $width - $codeTextWidth - (int) $code['x'], (int) $code['y'], $codeText, $color_code);
         }
         
         
@@ -154,17 +155,17 @@
         // output new file
         $quality = 50;
         if($isAddCode == 'on'){
-            imagejpeg($imgBlur, $dst_dir."\\".$codeInt.".".$ext, $quality);
+            imagejpeg($dst_img, $dst_dir."\\".$codeInt.".".$ext, $quality);
             $codeInt++; 
         } else {
-            imagejpeg($imgBlur, $dst_dir."\\".$image, $quality);
+            imagejpeg($dst_img, $dst_dir."\\".$image, $quality);
         }   
         
         
 
 
-        imagedestroy($imgBlur);
-        imagedestroy($imgMain);
+        imagedestroy($dst_img);
+        imagedestroy($src_img_new);
 
         if($isAddCode == 'on'){
             // imagedestroy($imgBlack);
